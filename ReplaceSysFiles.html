@@ -1,0 +1,95 @@
+<html>
+<head>
+<title>Replace System Files After Rebooting</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<p align="center"><a href="http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=1067&lngWId=1">Replace 
+  System Files After Rebooting</a></p>
+<p>Just be careful when replacing system files, you should use a method for checking 
+  file versions to <b>avoid replacing newer system files with older ones, this 
+  is the <u>MAIN</u> reason why windows is so unstable!</b></p>
+<p>&nbsp;</p>
+<p><b>To replace/delete files after rebooting you need to create a file named 
+  &quot;wininit.ini&quot; in the Windows directory.</b></p>
+<p><b>To rename a file you will need to enter the following in the file:</b><br>
+  [Rename]<br>
+  c:\windows\system\myoldsys.dll=c:\mynewsys.dll</p>
+<p><br>
+  <b>To delete a file you would enter:</b><br>
+  [Rename]<br>
+  NUL=c:\windows\system\myoldsys.dll</p>
+<p><br>
+  <b>So we see that the format is: newname=oldname</b></p>
+<p><br>
+  You need to use always the shortfilename for this to work longfilenames do not 
+  work at all.</p>
+<p><br>
+  <b>You can create the wininit.ini file manually and enter the data or you can 
+  use the following API:</b><br>
+  <font color="#336600">Declare Function OSGetShortPathName Lib &quot;kernel32&quot; 
+  Alias &quot;GetShortPathNameA&quot; (ByVal lpszLongPath As String, ByVal lpszShortPath 
+  As String, ByVal cchBuffer As Long) As Long</font></p>
+<p>Shortf = GetShortPathName(&quot;c:\mylongfilename.exe&quot;)<br>
+  szWinInitFile = &quot;wininit.ini&quot; Windows will find it automatically!</p>
+<p>&nbsp;</p>
+<p><b>To delete the file use the following code:</b><br>
+  <font color="#336600">Declare Function WritePrivateProfileString Lib &quot;kernel32&quot; 
+  Alias &quot;WritePrivateProfileStringA&quot; (ByVal lpApplicationName As String, 
+  ByVal lpKeyName As Any, ByVal lpString As Any, ByVal lpFileName As String) As 
+  Long </font></p>
+<p>WritePrivateProfileString &quot;Rename&quot;, &quot;NUL&quot;, Shortf, szWinInitFile</p>
+<p><b>To replace the file use the following code:</b><br>
+  WritePrivateProfileString &quot;Rename&quot;, &quot;C:\tips.txt&quot;, Shortf, 
+  szWinInitFile</p>
+<p><br>
+  However this method does not remove directories, if any of you know how to do 
+  that please tell me!</p>
+<p><br>
+  <b>Thanks to Bodya we also know this:<br>
+  This works under Win 95/98/Me only, Under WinNT one should use:</b><br>
+  MoveFileEx(szDstFile, NULL, MOVEFILE_DELAY_UNTIL_REBOOT);<br>
+  MoveFileEx(szSrcFile, szDstFile, MOVEFILE_DELAY_UNTIL_REBOOT); </p>
+<p>(see help on MoveFileEx in MSDN)</p>
+<p>So, to make this programm work correctly you should check the OS version and 
+  then use either MoveFileEx or WritePrivateProfileString correspondently.</p>
+<p><b>Thanks to Rei we also know this:</b><br>
+  WritePrivateProfileString should not be used to add a &quot;NUL&quot; entry 
+  into the wininit.ini file, because it may overwrite an existing one written 
+  by other setup application. We must parse the file w/o using this API.</p>
+<hr>
+<p><b>You can also use the writeprivateprofilestring api to write settings on 
+  your private (E.g.: myprog.ini) files, although it is highly recommended that 
+  you use the registry for this purpose.</b></p>
+<p>For educational purposes I am also including the api declaration to read the 
+  .ini files created with this method.</p>
+<p><font color="#336600">Declare Function GetPrivateProfileString&amp; Lib &quot;kernel32&quot; 
+  Alias _<br>
+  &quot;GetPrivateProfileStringA&quot; (ByVal lpApplicationName As String, ByVal 
+  lpKeyName _<br>
+  As String, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal 
+  _<br>
+  nSize As Long, ByVal lpFileName As String)</font></p>
+<p><b><u>WIN.INI FILE</u></b><br>
+  So we see here that Private means your own .ini files, you can use the following 
+  api to write settings to the win.ini file:</p>
+<p><font color="#336600">Declare Function WriteProfileString&amp; Lib &quot;kernel32&quot; 
+  Alias &quot;Write ProfileStringA&quot; _<br>
+  (ByVal lpszSection As String, ByVal lpszKeyName As String, ByVal lpszString 
+  As String)</font></p>
+<p><br>
+  And finally to read settings from the win.ini file</p>
+<p><font color="#336600">Declare Function GetProfileString&amp; Lib &quot;kernel32&quot; 
+  Alias &quot;GetProfileStringA&quot; _<br>
+  (ByVal lpAppName As String, ByVal lpKeyName As String, ByVal lpDefault As _<br>
+  String, ByVal lpReturnedString As String, ByVal nSize As Long)</font></p>
+<p>&nbsp;</p>
+<p>If you need help with the above I'll be happy to help. just visit my web site 
+  and send me an email.</p>
+<p>&nbsp;</p>
+<p>Regards,</p>
+<p>&nbsp;</p>
+<p><a href="http://LCenterprises.net">Luis Cantero</a></p>
+</body>
+</html>
